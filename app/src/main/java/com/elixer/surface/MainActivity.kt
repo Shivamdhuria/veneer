@@ -35,9 +35,17 @@ import kotlin.math.roundToInt
 class MainActivity : ComponentActivity(), SensorEventListener {
 
     private var mSensorManager: SensorManager? = null
+    private lateinit var sensorManager: SensorManager
+
     private var mAccelerometer: Sensor? = null
     val text = MutableStateFlow("Empty Text")
     val angleText = MutableStateFlow("0 Text")
+    private val accelerometerReading = FloatArray(3)
+    private val magnetometerReading = FloatArray(3)
+
+    private val rotationMatrix = FloatArray(9)
+    private val orientationAngles = FloatArray(3)
+    private val orientationAnglesCompose = MutableStateFlow("unknown")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +57,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                     Greeting("Android")
                     Column {
                         CircleShape()
-                        text()
+//                        text()
                         angletext()
                     }
                 }
@@ -57,29 +65,57 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         }
     }
 
-    override fun onSensorChanged(p0: SensorEvent?) {
-        val xAxis = p0?.values?.get(0);
-        val yAxis = p0?.values?.get(1);
-        Log.e("xAxis", xAxis.toString())
-        Log.e("yAxis", yAxis.toString())
-        if (xAxis != null && yAxis != null) {
-            val angle = Math.atan2(xAxis.toDouble(), yAxis.toDouble()) / (Math.PI / 180);
-            angleText.value = angle.roundToInt().toString()
-            Log.e("angle", angle.toString())
-        }
-        text.value = xAxis.toString() + yAxis.toString()
-//        if (!isLandscape) {
-//            if (angle > 80) {
-//                Orientation = 90;
-//                isLandscape = true;
-//            }
-//        } else {
+//    override fun onSensorChanged(p0: SensorEvent?) {
+////        val xAxis = p0?.values?.get(0);
+////        val yAxis = p0?.values?.get(1);
+////        Log.e("xAxis", xAxis.toString())
+////        Log.e("yAxis", yAxis.toString())
+////        if (xAxis != null && yAxis != null) {
+////            val angle = Math.atan2(xAxis.toDouble(), yAxis.toDouble()) / (Math.PI / 180);
+////            angleText.value = angle.roundToInt().toString()
+////            Log.e("angle", angle.toString())
+////        }
+////        text.value = xAxis.toString() + yAxis.toString()
+////        if (!isLandscape) {
+////            if (angle > 80) {
+////                Orientation = 90;
+////                isLandscape = true;
+////            }
+////        } else {
+////
+////            if (Math.abs(angle) < 10) {
+////                Orientation = 0;  //portrait
+////                isLandscape = false;
+////            }
+////        }
 //
-//            if (Math.abs(angle) < 10) {
-//                Orientation = 0;  //portrait
-//                isLandscape = false;
-//            }
-//        }
+//
+//    }
+
+    override fun onSensorChanged(event: SensorEvent) {
+        if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
+            System.arraycopy(event.values, 0, accelerometerReading, 0, accelerometerReading.size)
+        } else if (event.sensor.type == Sensor.TYPE_MAGNETIC_FIELD) {
+            System.arraycopy(event.values, 0, magnetometerReading, 0, magnetometerReading.size)
+        }
+        updateOrientationAngles()
+    }
+
+    fun updateOrientationAngles() {
+        // Update rotation matrix, which is needed to update orientation angles.
+        SensorManager.getRotationMatrix(
+            rotationMatrix,
+            null,
+            accelerometerReading,
+            magnetometerReading
+        )
+
+        // "rotationMatrix" now has up-to-date information.
+
+        SensorManager.getOrientation(rotationMatrix, orientationAngles)
+        orientationAnglesCompose.value = " Azimuth ${orientationAngles[0].roundToInt()}     pitch  ${orientationAngles[1].roundToInt()} roll  ${orientationAngles[2].roundToInt()}"
+
+        // "orientationAngles" now has up-to-date information.
     }
 
 
@@ -90,20 +126,47 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     fun initialize() {
         val context = LocalContext.current
         mSensorManager = context.getSystemService(SENSOR_SERVICE) as SensorManager?;
-        mAccelerometer = mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+//        mAccelerometer = mSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        registerListener()
         Log.e("mAccelerometer", mSensorManager.toString())
 
     }
 
     override fun onResume() {
         super.onResume()
-        mSensorManager?.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        registerListener()
         Log.e("sensorManager", mSensorManager.toString())
+    }
+
+    private fun registerListener() {
+//        mSensorManager?.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also { accelerometer ->
+            sensorManager.registerListener(
+                this,
+                accelerometer,
+                SensorManager.SENSOR_DELAY_NORMAL,
+                SensorManager.SENSOR_DELAY_UI
+            )
+        }
+        sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.also { magneticField ->
+            sensorManager.registerListener(
+                this,
+                magneticField,
+                SensorManager.SENSOR_DELAY_NORMAL,
+                SensorManager.SENSOR_DELAY_UI
+            )
+        }
     }
 
     override fun onPause() {
         super.onPause()
         mSensorManager?.unregisterListener(this);
+        sensorManager.unregisterListener(this)
+
 
     }
 
@@ -115,7 +178,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     @Composable
     fun angletext() {
-        val myText by angleText.collectAsState()
+        val myText by orientationAnglesCompose.collectAsState()
         Text(myText)
     }
 
