@@ -9,6 +9,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -21,14 +23,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.elixer.surface.ui.customComponent
 import com.elixer.surface.ui.theme.SurfaceTheme
+import com.elixer.surface.ui.theme.WHITE200
+import com.elixer.surface.ui.theme.WHITE400
+import com.elixer.surface.ui.theme.WHITE800
 import kotlinx.coroutines.flow.MutableStateFlow
+import java.util.*
 import kotlin.math.roundToInt
 
 
@@ -40,6 +53,17 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     private var mAccelerometer: Sensor? = null
     val text = MutableStateFlow("Empty Text")
     val angleText = MutableStateFlow("0 Text")
+
+    val azimuthAngle = MutableStateFlow("")
+    val azimuthRadian = MutableStateFlow("")
+
+    val pitchAngle = MutableStateFlow("")
+    val pitchRadian = MutableStateFlow("")
+
+    val rollAngle = MutableStateFlow("")
+    val rollAngleFloat = MutableStateFlow(600f)
+    val rollRadian = MutableStateFlow("")
+
     private val accelerometerReading = FloatArray(3)
     private val magnetometerReading = FloatArray(3)
 
@@ -49,48 +73,40 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
+            val backgroundImage = painterResource(R.drawable.texture)
+            val rollFlo by rollAngleFloat.collectAsState()
             initialize()
-            SurfaceTheme {
+            SurfaceTheme() {
                 // A surface container using the 'background' color from the theme
-                Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    Greeting("Android")
-                    Column {
-                        CircleShape()
+                Surface() {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Image(painter = backgroundImage, contentDescription = "sdsd",
+                            contentScale =  ContentScale.FillBounds,)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 40.dp)
+                        ) {
+//                        CircleShape()
 //                        text()
-                        angletext()
+//                        new()
+                            Spacer(modifier = Modifier.height(200.dp))
+                            customComponent(canvasSize = 100.dp,rotationValue = rollFlo)
+                            Spacer(modifier = Modifier.height(200.dp))
+                            Labels()
+                            angletext()
+                            RadianText()
+                        }
                     }
+
+
                 }
             }
         }
     }
-
-//    override fun onSensorChanged(p0: SensorEvent?) {
-////        val xAxis = p0?.values?.get(0);
-////        val yAxis = p0?.values?.get(1);
-////        Log.e("xAxis", xAxis.toString())
-////        Log.e("yAxis", yAxis.toString())
-////        if (xAxis != null && yAxis != null) {
-////            val angle = Math.atan2(xAxis.toDouble(), yAxis.toDouble()) / (Math.PI / 180);
-////            angleText.value = angle.roundToInt().toString()
-////            Log.e("angle", angle.toString())
-////        }
-////        text.value = xAxis.toString() + yAxis.toString()
-////        if (!isLandscape) {
-////            if (angle > 80) {
-////                Orientation = 90;
-////                isLandscape = true;
-////            }
-////        } else {
-////
-////            if (Math.abs(angle) < 10) {
-////                Orientation = 0;  //portrait
-////                isLandscape = false;
-////            }
-////        }
-//
-//
-//    }
 
     override fun onSensorChanged(event: SensorEvent) {
         if (event.sensor.type == Sensor.TYPE_ACCELEROMETER) {
@@ -113,8 +129,17 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         // "rotationMatrix" now has up-to-date information.
 
         SensorManager.getOrientation(rotationMatrix, orientationAngles)
-        orientationAnglesCompose.value = " Azimuth ${orientationAngles[0].roundToInt()}     pitch  ${orientationAngles[1].roundToInt()} roll  ${orientationAngles[2].roundToInt()}"
+        azimuthAngle.value = orientationAngles[0].toString()
+        pitchAngle.value = orientationAngles[1].toString()
+        rollAngle.value = orientationAngles[2].toString()
 
+        azimuthRadian.value = (orientationAngles[0] * (180 / Math.PI)).roundToInt().toString()
+        pitchRadian.value = (orientationAngles[1] * (180 / Math.PI)).roundToInt().toString()
+        rollRadian.value = (orientationAngles[2] * (180 / Math.PI)).roundToInt().toString()
+
+
+        orientationAnglesCompose.value = " Azimuth ${orientationAngles[0].roundToInt()}     pitch  ${orientationAngles[1].roundToInt()} roll  ${orientationAngles[2].roundToInt()}"
+        rollAngleFloat.value = (orientationAngles[2] * (180 / Math.PI)).toFloat()
         // "orientationAngles" now has up-to-date information.
     }
 
@@ -148,7 +173,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             sensorManager.registerListener(
                 this,
                 accelerometer,
-                SensorManager.SENSOR_DELAY_NORMAL,
+//                SensorManager.SENSOR_DELAY_NORMAL,
+                1000000,
                 SensorManager.SENSOR_DELAY_UI
             )
         }
@@ -156,7 +182,8 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             sensorManager.registerListener(
                 this,
                 magneticField,
-                SensorManager.SENSOR_DELAY_NORMAL,
+//                SensorManager.SENSOR_DELAY_NORMAL,
+                1000000,
                 SensorManager.SENSOR_DELAY_UI
             )
         }
@@ -171,23 +198,86 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     @Composable
-    fun text() {
-        val myText by text.collectAsState()
-        Text(myText)
+    fun new(canvasSize: Dp = 300.dp) {
+        val rollFlo by rollAngleFloat.collectAsState()
+        Canvas(modifier = Modifier.size(canvasSize))
+        {
+            rotate(degrees = rollFlo) {
+                drawMetallicButton(WHITE200, WHITE400, WHITE800)
+            }
+        }
+
+    }
+
+    fun DrawScope.drawMetallicButton(
+        colorLight: Color,
+        colorMid: Color,
+        ColorDark: Color,
+        radius: Float = 350f
+    ) {
+        drawCircle(
+            brush = Brush.sweepGradient(
+                0.0f to colorLight,
+                0.2f to colorMid,
+                0.3f to ColorDark,
+                0.4f to colorLight,
+                0.5f to colorMid,
+                0.6f to ColorDark,
+                0.7f to colorLight,
+                0.8f to colorMid,
+                0.9f to ColorDark,
+                0.998f to colorLight,
+            ),
+            radius = radius
+
+
+        )
+
     }
 
     @Composable
     fun angletext() {
-        val myText by orientationAnglesCompose.collectAsState()
-        Text(myText)
+        val azi by azimuthAngle.collectAsState()
+        val pitch by pitchAngle.collectAsState()
+        val roll by rollAngle.collectAsState()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(azi)
+            Text(pitch)
+            Text(roll)
+        }
+    }
+
+    @Composable
+    fun RadianText() {
+        val azi by azimuthRadian.collectAsState()
+        val pitch by pitchRadian.collectAsState()
+        val roll by rollRadian.collectAsState()
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(azi)
+            Text(pitch)
+            Text(roll)
+        }
     }
 
 }
 
 
 @Composable
-fun Greeting(name: String) {
-    Text(text = "Hello $name!")
+fun Labels() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text("Azimuth")
+        Text("Pitch")
+        Text("Roll")
+    }
 }
 
 
@@ -209,31 +299,29 @@ fun RoundedMetallicSurface(shape: Shape) {
                 .clip(shape)
 //                .background(Color.Red)
                 .background(
-                    brush = Brush.sweepGradient(
-                        colors = listOf(
-                            Color(0xFFF5F5F5),
-                            Color(0xFF5B5B5B),
-                            Color(0xFFC5C5C5),
-                            Color(0xFFF5F5F5),
-                            Color(0xFF5B5B5B),
-                            Color(0xFFC5C5C5),
-                            Color(0xFFF5F5F5),
-                            Color(0xFF5B5B5B),
-                            Color(0xFFC5C5C5),
-                            Color(0xFFF5F5F5),
-                        )
+                    Brush.sweepGradient(
+                        0.0f to WHITE200,
+                        0.2f to WHITE400,
+                        0.3f to WHITE800,
+                        0.4f to WHITE200,
+                        0.5f to WHITE400,
+                        0.6f to WHITE800,
+                        0.7f to WHITE200,
+                        0.8f to WHITE400,
+                        0.9f to WHITE800,
+                        0.998f to WHITE200,
                     )
                 )
-
         )
     }
 }
+
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
     SurfaceTheme {
-        Greeting("Android")
         CircleShape()
+        Labels()
     }
 }
