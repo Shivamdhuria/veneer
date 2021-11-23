@@ -94,7 +94,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 //                        text()
 //                        new()
                             Spacer(modifier = Modifier.height(200.dp))
-                            customComponent(canvasSize = 100.dp,rotationValue = rollFlo)
+                            customComponent(canvasSize = 200.dp,rotationValue = rollFlo/1.2f)
                             Spacer(modifier = Modifier.height(200.dp))
                             Labels()
                             angletext()

@@ -10,3 +10,6 @@ val Teal200 = Color(0xFF03DAC5)
 val WHITE200 = Color(0xFFF5F5F5)
 val WHITE800 = Color(0xFF5B5B5B)
 val WHITE400 = Color(0xFFC5C5C5)
+
+val GOLD400 = Color(0xFFF7D147)
+val GREY800 = Color(0xFF1D1D1C)
