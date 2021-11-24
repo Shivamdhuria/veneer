@@ -9,12 +9,8 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,10 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
@@ -35,7 +27,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.elixer.surface.ui.customComponent
+import com.elixer.surface.ui.metallicComponent
+import com.elixer.surface.ui.modernButton
 import com.elixer.surface.ui.theme.SurfaceTheme
 import com.elixer.surface.ui.theme.WHITE200
 import com.elixer.surface.ui.theme.WHITE400
@@ -49,10 +42,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
 
     private var mSensorManager: SensorManager? = null
     private lateinit var sensorManager: SensorManager
-
-    private var mAccelerometer: Sensor? = null
-    val text = MutableStateFlow("Empty Text")
-    val angleText = MutableStateFlow("0 Text")
 
     val azimuthAngle = MutableStateFlow("")
     val azimuthRadian = MutableStateFlow("")
@@ -82,27 +71,28 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 // A surface container using the 'background' color from the theme
                 Surface() {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        Image(painter = backgroundImage, contentDescription = "sdsd",
-                            contentScale =  ContentScale.FillBounds,)
+                        Image(
+                            painter = backgroundImage, contentDescription = "sdsd",
+                            contentScale = ContentScale.FillBounds,
+                        )
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(horizontal = 40.dp)
                         ) {
-//                        CircleShape()
-//                        text()
-//                        new()
-                            Spacer(modifier = Modifier.height(200.dp))
-                            customComponent(canvasSize = 200.dp,rotationValue = rollFlo/1.2f)
+                            Spacer(modifier = Modifier.height(20.dp))
+                            metallicComponent(canvasSize = 200.dp,rotationValue = rollFlo/1.2f)
+                            Spacer(modifier = Modifier.height(20.dp))
+                            modernButton(canvasSize = 200.dp, rotationValue = rollFlo)
+
                             Spacer(modifier = Modifier.height(200.dp))
                             Labels()
                             angletext()
                             RadianText()
+                            Text(text = rollFlo.toString())
                         }
                     }
-
-
                 }
             }
         }
@@ -168,7 +158,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
     }
 
     private fun registerListener() {
-//        mSensorManager?.registerListener(this, mAccelerometer, SensorManager.SENSOR_DELAY_UI);
         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)?.also { accelerometer ->
             sensorManager.registerListener(
                 this,
@@ -193,46 +182,6 @@ class MainActivity : ComponentActivity(), SensorEventListener {
         super.onPause()
         mSensorManager?.unregisterListener(this);
         sensorManager.unregisterListener(this)
-
-
-    }
-
-    @Composable
-    fun new(canvasSize: Dp = 300.dp) {
-        val rollFlo by rollAngleFloat.collectAsState()
-        Canvas(modifier = Modifier.size(canvasSize))
-        {
-            rotate(degrees = rollFlo) {
-                drawMetallicButton(WHITE200, WHITE400, WHITE800)
-            }
-        }
-
-    }
-
-    fun DrawScope.drawMetallicButton(
-        colorLight: Color,
-        colorMid: Color,
-        ColorDark: Color,
-        radius: Float = 350f
-    ) {
-        drawCircle(
-            brush = Brush.sweepGradient(
-                0.0f to colorLight,
-                0.2f to colorMid,
-                0.3f to ColorDark,
-                0.4f to colorLight,
-                0.5f to colorMid,
-                0.6f to ColorDark,
-                0.7f to colorLight,
-                0.8f to colorMid,
-                0.9f to ColorDark,
-                0.998f to colorLight,
-            ),
-            radius = radius
-
-
-        )
-
     }
 
     @Composable
@@ -264,9 +213,7 @@ class MainActivity : ComponentActivity(), SensorEventListener {
             Text(roll)
         }
     }
-
 }
-
 
 @Composable
 fun Labels() {
@@ -280,48 +227,10 @@ fun Labels() {
     }
 }
 
-
-@Composable
-fun CircleShape() {
-    RoundedMetallicSurface(shape = CircleShape)
-}
-
-@Composable
-fun RoundedMetallicSurface(shape: Shape) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentSize(Alignment.Center)
-    ) {
-        Box(
-            modifier = Modifier
-                .size(300.dp)
-                .clip(shape)
-//                .background(Color.Red)
-                .background(
-                    Brush.sweepGradient(
-                        0.0f to WHITE200,
-                        0.2f to WHITE400,
-                        0.3f to WHITE800,
-                        0.4f to WHITE200,
-                        0.5f to WHITE400,
-                        0.6f to WHITE800,
-                        0.7f to WHITE200,
-                        0.8f to WHITE400,
-                        0.9f to WHITE800,
-                        0.998f to WHITE200,
-                    )
-                )
-        )
-    }
-}
-
-
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
     SurfaceTheme {
-        CircleShape()
         Labels()
     }
 }
