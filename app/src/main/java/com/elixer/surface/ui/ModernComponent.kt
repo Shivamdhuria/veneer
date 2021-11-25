@@ -15,10 +15,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Blue
+import androidx.compose.ui.graphics.Color.Companion.Red
+import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.semantics.SemanticsProperties.Text
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType.Companion.Text
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -32,17 +38,17 @@ import kotlin.math.roundToInt
 fun modernButton(
     canvasSize: Dp = 300.dp,
     rotationValue: Float,
-    colors: List<Color> = listOf(
-        BLUE, PINK
-    )
+    colorBegin: Color = PINK,
+    colorEnd: Color = BLUE,
 ) {
     val lastRotation = remember { mutableStateOf(0f) } // this keeps last rotation
     val difference = rotationValue - lastRotation.value
-    val time = 900 / (difference.absoluteValue)
+    val time = 1000 / (difference.absoluteValue)
     lastRotation.value = rotationValue
 
+    //converting angle to a float value and reducing sensitivity
     val angle: Float by animateFloatAsState(
-        targetValue = rotationValue / 90f,
+        targetValue = rotationValue / 120f,
         animationSpec = tween(
             durationMillis = 200,
             easing = LinearEasing
@@ -53,58 +59,22 @@ fun modernButton(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .size(canvasSize)
+            .size(height = canvasSize / 3, width = canvasSize)
             .drawBehind {
                 val componentSize = size / 1.25f
-
-                drawRoundedRectangle(colors, angle)
+                drawRoundedRectangle(colorBegin,colorEnd, angle)
 
             },
 
         ) {
-//        getTriangle()
-        Text(angle.toString())
+        Text("Modern Button", fontWeight = FontWeight.Bold, color = White)
+//        Text(angle.toString())
     }
 }
 
-//@Composable
-//private fun getTriangle() {
-//    Canvas(
-//        modifier = Modifier
-//            .fillMaxSize()
-//            .aspectRatio(1f)
-//            .rotate(0f)
-//    ) {
-//        val canvasWidth = size.width / 1.9f
-//        val canvasHeight = size.height / 2f
-//        val rect = Rect(center = Offset(canvasWidth, canvasHeight), canvasWidth / 3f)
-//        val trianglePath = Path().apply {
-//            moveTo(rect.centerRight)
-//            lineTo(rect.bottomLeft)
-//            lineTo(rect.topLeft)
-//            // note that two more point repeats needed to round all corners
-//            lineTo(rect.centerRight)
-//            lineTo(rect.bottomLeft)
-//        }
-//
-//        drawIntoCanvas { canvas ->
-//            canvas.drawOutline(
-//                outline = Outline.Generic(trianglePath),
-//                paint = Paint().apply {
-//
-//                    color = GREY800
-//                    pathEffect = PathEffect.cornerPathEffect(rect.maxDimension / 12)
-//                }
-//            )
-//        }
-//    }
-//}
-
-//fun Path.moveTo(offset: Offset) = moveTo(offset.x, offset.y)
-//fun Path.lineTo(offset: Offset) = lineTo(offset.x, offset.y)
-//
 fun DrawScope.drawRoundedRectangle(
-    colors: List<Color>,
+    colorBegin: Color,
+    colorEnd:Color,
     angle: Float
 ) {
     drawRoundRect(
@@ -112,8 +82,10 @@ fun DrawScope.drawRoundedRectangle(
 //            colors
 //        ),
         brush = Brush.horizontalGradient(
-            0.0f to Color.Red,
-            1.0f to Color.Blue,
+//            0.0f to PINK,
+            0.0f + angle to colorBegin,
+            1.0f + angle to colorEnd,
+
         ),
 //        size = Size(
 //            width = 300.dp.toPx(),
@@ -124,8 +96,8 @@ fun DrawScope.drawRoundedRectangle(
 //            y = 60.dp.toPx()
 //        ),
         cornerRadius = CornerRadius(
-            x = 20.dp.toPx(),
-            y = 20.dp.toPx()
+            x = 10.dp.toPx(),
+            y = 10.dp.toPx()
         )
     )
 }

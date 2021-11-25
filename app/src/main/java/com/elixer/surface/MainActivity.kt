@@ -18,6 +18,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
@@ -27,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.elixer.surface.ui.metallicComponent
 import com.elixer.surface.ui.modernButton
 import com.elixer.surface.ui.theme.SurfaceTheme
@@ -71,26 +73,28 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                 // A surface container using the 'background' color from the theme
                 Surface() {
                     Box(modifier = Modifier.fillMaxSize()) {
-                        Image(
-                            painter = backgroundImage, contentDescription = "sdsd",
-                            contentScale = ContentScale.FillBounds,
-                        )
+//                        Image(
+//                            painter = backgroundImage, contentDescription = "sdsd",
+//                            contentScale = ContentScale.FillBounds,
+//                        )
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(horizontal = 40.dp)
                         ) {
+//                            Spacer(modifier = Modifier.height(20.dp))
+//                            metallicComponent(canvasSize = 200.dp,rotationValue = rollFlo/1.2f)
                             Spacer(modifier = Modifier.height(20.dp))
-                            metallicComponent(canvasSize = 200.dp,rotationValue = rollFlo/1.2f)
-                            Spacer(modifier = Modifier.height(20.dp))
+                            Text(text = "veneer",fontSize = 90.sp, color = Color.DarkGray)
+                            Text(text = "reactive buttons",fontSize = 20.sp, color = Color.DarkGray)
+                            Spacer(modifier = Modifier.height(200.dp))
                             modernButton(canvasSize = 200.dp, rotationValue = rollFlo)
-
                             Spacer(modifier = Modifier.height(200.dp))
                             Labels()
                             angletext()
                             RadianText()
-                            Text(text = rollFlo.toString())
+//                            Text(text = rollFlo.toString())
                         }
                     }
                 }
