@@ -30,11 +30,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.elixer.surface.ui.metallicComponent
-import com.elixer.surface.ui.modernButton
 import com.elixer.surface.ui.theme.SurfaceTheme
 import com.elixer.surface.ui.theme.WHITE200
 import com.elixer.surface.ui.theme.WHITE400
 import com.elixer.surface.ui.theme.WHITE800
+import com.elixer.veneer.modernButton
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.*
 import kotlin.math.roundToInt
@@ -89,7 +89,9 @@ class MainActivity : ComponentActivity(), SensorEventListener {
                             Text(text = "veneer",fontSize = 90.sp, color = Color.DarkGray)
                             Text(text = "reactive buttons",fontSize = 20.sp, color = Color.DarkGray)
                             Spacer(modifier = Modifier.height(200.dp))
+//                            modernButton(canvasSize = 200.dp, rotationValue = rollFlo)
                             modernButton(canvasSize = 200.dp, rotationValue = rollFlo)
+
                             Spacer(modifier = Modifier.height(200.dp))
                             Labels()
                             angletext()
