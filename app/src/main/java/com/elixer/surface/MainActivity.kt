@@ -3,7 +3,10 @@ package com.elixer.surface
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.elixer.surface.ui.theme.SurfaceTheme
 import com.elixer.veneer.Veneer
+import com.elixer.veneer.composables.modernBackground
 import com.elixer.veneer.modernButton
 
 class MainActivity : ComponentActivity() {
@@ -44,14 +48,23 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.height(20.dp))
                             Text(text = "veneer", fontSize = 90.sp, color = Color.DarkGray)
                             Text(text = "reactive buttons", fontSize = 20.sp, color = Color.DarkGray)
-                            Spacer(modifier = Modifier.height(200.dp))
+                            Spacer(modifier = Modifier.height(100.dp))
 //                            modernButton(canvasSize = 200.dp, rotationValue = rollFlo)
-                            modernButton(canvasSize = 200.dp, rotationValue = rollAngle)
-
+//                            modernButton(canvasSize = 200.dp, rotationValue = rollAngle)
+                            modernBackground(
+                                onClick = { println("pressed") }, rotationValue = rollAngle, shape = RoundedCornerShape(10)
+                            ) {
+                                Text(
+                                    text = "Modern Button", fontSize = 20.sp,
+                                    modifier =  Modifier.padding(10.dp),
+                                )
+                            }
                             Spacer(modifier = Modifier.height(200.dp))
                             Labels()
                             angletext(azimuthAngle, pitchAngle, rollAngle)
                             RadianText()
+
+
                         }
                     }
                 }
