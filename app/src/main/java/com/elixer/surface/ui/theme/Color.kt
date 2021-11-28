@@ -13,6 +13,8 @@ val WHITE400 = Color(0xFFC5C5C5)
 
 val GOLD400 = Color(0xFFF7D147)
 val GREY800 = Color(0xFF1D1D1C)
+val GREY600 = Color(0xFF292929)
 
 val BLUE = Color(0xFF1C86EB)
 val PINK = Color(0xFFE67FC8)
+val GOLD800= Color(0xFF5E4F1C)
