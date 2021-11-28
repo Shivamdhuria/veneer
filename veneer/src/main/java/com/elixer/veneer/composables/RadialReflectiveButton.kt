@@ -4,8 +4,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -13,28 +12,40 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.elixer.veneer.BLUE
-import com.elixer.veneer.PINK
+import com.elixer.veneer.*
+
 import kotlin.math.absoluteValue
+import kotlin.math.roundToInt
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun modernBackground(
+fun RadialReflectiveButton(
+    canvasSize: Dp = 300.dp,
     rotationValue: Float,
+    colorList: List<Color> = listOf(
+        WHITE200,
+        WHITE200,
+        WHITE400,
+        WHITE800,
+        WHITE200,
+        WHITE400,
+        WHITE400,
+        WHITE800,
+        WHITE200,
+    ),
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
     colorBegin: Color = PINK,
     colorEnd: Color = BLUE,
     onClick: () -> Unit,
@@ -44,43 +55,21 @@ fun modernBackground(
     elevation: ButtonElevation? = ButtonDefaults.elevation(),
     shape: Shape = MaterialTheme.shapes.small,
     border: BorderStroke? = null,
-    colors: ButtonColors = ButtonDefaults.buttonColors(),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
-
-
 ) {
     val lastRotation = remember { mutableStateOf(0f) } // this keeps last rotation
     val difference = rotationValue - lastRotation.value
-    val time = 1000 / (difference.absoluteValue)
+    val time = 900 / (difference.absoluteValue)
     lastRotation.value = rotationValue
 
-    //converting angle to a float value and reducing sensitivity
     val angle: Float by animateFloatAsState(
-        targetValue = rotationValue / 120f,
+        targetValue = rotationValue,
         animationSpec = tween(
-            durationMillis = 200,
+            durationMillis = time.roundToInt(),
             easing = LinearEasing
         )
     )
-//
-//    Column(
-//        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        modifier = Modifier
-//            .size(height = canvasSize / 3, width = canvasSize)
-//            .drawBehind {
-//                val componentSize = size / 1.25f
-//                drawRoundedRectangle(colorBegin, colorEnd, angle)
-//
-//            },
-//
-//        ) {
-//        Text("Modern Button", fontWeight = FontWeight.Bold, color = White)
-////        Text(angle.toString())
-//    }
-
-
     val contentColor by colors.contentColor(enabled)
     Surface(
         modifier = modifier,
@@ -106,8 +95,9 @@ fun modernBackground(
                             minHeight = ButtonDefaults.MinHeight
                         )
                         .drawBehind {
-                            val componentSize = size / 1.25f
-                            drawRoundedRectangle(colorBegin, colorEnd, angle)
+                            rotate(degrees = angle) {
+                                drawCircle(colorList)
+                            }
                         }
                         .padding(contentPadding),
                     horizontalArrangement = Arrangement.Center,
@@ -118,45 +108,74 @@ fun modernBackground(
         }
     }
 
-
+//    Column(
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        modifier = Modifier
+//            .size(canvasSize)
+//            .drawBehind {
+//                val componentSize = size / 1.25f
+//                rotate(degrees = angle) {
+//                    drawCircle(colors)
+//                }
+//            },
+//
+//        ) {
+//        getTriangle()
+//    }
 }
 
+@Composable
+private fun getTriangle() {
+    Canvas(
+        modifier = Modifier
+            .fillMaxSize()
+            .aspectRatio(1f)
+            .rotate(0f)
+    ) {
+        val canvasWidth = size.width / 1.9f
+        val canvasHeight = size.height / 2f
+        val rect = Rect(center = Offset(canvasWidth, canvasHeight), canvasWidth / 3f)
+        val trianglePath = Path().apply {
+            moveTo(rect.centerRight)
+            lineTo(rect.bottomLeft)
+            lineTo(rect.topLeft)
+            // note that two more point repeats needed to round all corners
+            lineTo(rect.centerRight)
+            lineTo(rect.bottomLeft)
+        }
 
-fun DrawScope.drawRoundedRectangle(
-    colorBegin: Color,
-    colorEnd: Color,
-    angle: Float
+        drawIntoCanvas { canvas ->
+            canvas.drawOutline(
+                outline = Outline.Generic(trianglePath),
+                paint = Paint().apply {
+
+                    color = GREY800
+                    pathEffect = PathEffect.cornerPathEffect(rect.maxDimension / 12)
+                }
+            )
+        }
+    }
+}
+
+fun Path.moveTo(offset: Offset) = moveTo(offset.x, offset.y)
+fun Path.lineTo(offset: Offset) = lineTo(offset.x, offset.y)
+
+fun DrawScope.drawCircle(
+    colors: List<Color>
 ) {
-    drawRoundRect(
-//        brush = Brush.horizontalGradient(
-//            colors
-//        ),
-        brush = Brush.horizontalGradient(
-//            0.0f to PINK,
-            0.0f + angle to colorBegin,
-            1.0f + angle to colorEnd,
-
-            ),
-//        size = Size(
-//            width = 300.dp.toPx(),
-//            height = 150.dp.toPx()
-//        ),
-//        topLeft = Offset(
-//            x = 60.dp.toPx(),
-//            y = 60.dp.toPx()
-//        ),
-//        cornerRadius = CornerRadius(
-//            x = 10.dp.toPx(),
-//            y = 10.dp.toPx()
-//        )
+    drawCircle(
+        brush = Brush.sweepGradient(
+            colors
+        ),
+        radius = size.maxDimension
     )
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun modernButtonPreview() {
-    modernBackground( rotationValue = 0f, onClick = {}) {
-        Text(text = "dsjdjkshd")
+fun customComponentPreview() {
+    RadialReflectiveButton(canvasSize = 100.dp, rotationValue = 0f, onClick = {}){
 
     }
 }

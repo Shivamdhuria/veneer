@@ -3,12 +3,13 @@ package com.elixer.surface
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -21,8 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.elixer.surface.ui.theme.SurfaceTheme
 import com.elixer.veneer.Veneer
-import com.elixer.veneer.composables.modernBackground
-import com.elixer.veneer.modernButton
+import com.elixer.veneer.composables.RadialReflectiveButton
+import com.elixer.veneer.composables.ReactiveGradientButton
 
 class MainActivity : ComponentActivity() {
 
@@ -51,13 +52,38 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.height(100.dp))
 //                            modernButton(canvasSize = 200.dp, rotationValue = rollFlo)
 //                            modernButton(canvasSize = 200.dp, rotationValue = rollAngle)
-                            modernBackground(
+                            RadialReflectiveButton(canvasSize = 200.dp,
+                                rotationValue = rollAngle,onClick = { println("pressed") }){
+
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+
+                            ReactiveGradientButton(
                                 onClick = { println("pressed") }, rotationValue = rollAngle, shape = RoundedCornerShape(10)
                             ) {
                                 Text(
                                     text = "Modern Button", fontSize = 20.sp,
-                                    modifier =  Modifier.padding(10.dp),
+                                    modifier = Modifier.padding(10.dp),
                                 )
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Button(
+                                onClick = { /*TODO*/ },
+                                modifier = Modifier.size(50.dp),  //avoid the oval shape
+                                shape = CircleShape,
+                                border = BorderStroke(1.dp, Color.Blue),
+                                contentPadding = PaddingValues(0.dp),  //avoid the little icon
+                                colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Blue)
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = "content description")
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
+                            Button(
+                                onClick = { /*TODO*/ },
+                                border = BorderStroke(1.dp, Color.Blue),
+                                contentPadding = PaddingValues(0.dp),  //avoid the little icon
+                            ) {
+                                Icon(Icons.Default.Add, contentDescription = "content description")
                             }
                             Spacer(modifier = Modifier.height(200.dp))
                             Labels()
