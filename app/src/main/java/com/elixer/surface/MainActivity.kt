@@ -3,24 +3,23 @@ package com.elixer.surface
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBalance
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.outlined.Pause
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
@@ -32,14 +31,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.elixer.surface.ui.lineTo
 import com.elixer.surface.ui.moveTo
-import com.elixer.surface.ui.theme.GOLD800
-import com.elixer.surface.ui.theme.GREY600
-import com.elixer.surface.ui.theme.GREY800
-import com.elixer.surface.ui.theme.SurfaceTheme
+import com.elixer.surface.ui.theme.*
+import com.elixer.veneer.BLUE_DARK
+import com.elixer.veneer.GOLD100
+import com.elixer.veneer.GOLD400
 import com.elixer.veneer.Veneer
-import com.elixer.veneer.composables.LinearReflectiveButton
-import com.elixer.veneer.composables.RadialReflectiveButton
-import com.elixer.veneer.composables.ReactiveGradientButton
+import com.elixer.veneer.composables.*
 
 class MainActivity : ComponentActivity() {
 
@@ -58,19 +55,20 @@ class MainActivity : ComponentActivity() {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(20.dp),
+                            verticalArrangement = Arrangement.spacedBy(15.dp),
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(horizontal = 40.dp)
                                 .verticalScroll(scrollState)
+
                         ) {
-                            Text(text = "veneer", fontSize = 90.sp, color = Color.DarkGray)
-                            Text(text = "reactive buttons", fontSize = 20.sp, color = Color.Gray)
+                            Heading()
                             ModernGradientButtons(rollAngle)
                             Spacer(modifier = Modifier.height(20.dp))
                             ReflectiveButtons(rollAngle)
                             Spacer(modifier = Modifier.height(20.dp))
                             LinearReflectiveButton(rollAngle)
+                            GlossyButtons(rollAngle = rollAngle)
 
 
 //                            modernButton(canvasSize = 200.dp, rotationValue = rollFlo)
@@ -85,6 +83,12 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    @Composable
+    private fun Heading() {
+        Text(text = "veneer", fontSize = 80.sp, color = Color.DarkGray)
+        Text(text = "reactive buttons", fontSize = 15.sp, color = Color.Gray)
     }
 
     override fun onResume() {
@@ -137,7 +141,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ReflectiveButtons(rollAngle: Float) {
 
-    Text(text = "reflective buttons", fontSize = 20.sp, color = Color.Gray)
+    Text(text = "radial reflective buttons", fontSize = 15.sp, color = Color.Gray)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(20.dp),
@@ -174,10 +178,46 @@ fun ReflectiveButtons(rollAngle: Float) {
 
 }
 
+
+@Composable
+fun GlossyButtons(rollAngle: Float) {
+    Text(text = "glossy buttons", fontSize = 15.sp, color = Color.Gray)
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
+    ) {
+        GlossyButton(
+            rotationValue = rollAngle, onClick = { println("pressed") },
+            shape = RoundedCornerShape(50),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray)
+        ) {
+            Icon(
+                Icons.Outlined.Person, contentDescription = "content description", tint = BLUE_DARK,
+                modifier = Modifier.alpha(0.4f),
+            )
+        }
+
+        GlossyButton(
+            onClick = { }, rotationValue = rollAngle, shape = RoundedCornerShape(10)
+        ) {
+            Text(
+                text = "Glossy Button", fontSize = 20.sp,
+                modifier = Modifier
+                    .padding(10.dp)
+                    .alpha(0.4f),
+                color = BLUE_DARK,
+            )
+        }
+    }
+
+
+}
+
 @Composable
 fun ModernGradientButtons(rollAngle: Float) {
 
-    Text(text = "modern gradient buttons", fontSize = 20.sp, color = Color.Gray)
+    Text(text = "modern gradient buttons", fontSize = 15.sp, color = Color.Gray)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -208,7 +248,7 @@ fun ModernGradientButtons(rollAngle: Float) {
 @Composable
 fun LinearReflectiveButton(rollAngle: Float) {
 
-    Text(text = " linear reflective buttons", fontSize = 20.sp, color = Color.Gray)
+    Text(text = " linear reflective buttons", fontSize = 15.sp, color = Color.Gray)
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(20.dp),
@@ -251,7 +291,7 @@ fun DefaultPreview() {
             ReflectiveButtons(0f)
             Spacer(modifier = Modifier.height(20.dp))
             LinearReflectiveButton(rollAngle = 0f)
-
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
