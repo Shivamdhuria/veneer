@@ -68,6 +68,7 @@ class MainActivity : ComponentActivity() {
                             ReflectiveButtons(rollAngle)
                             Spacer(modifier = Modifier.height(20.dp))
                             LinearReflectiveButton(rollAngle)
+                            Spacer(modifier = Modifier.height(20.dp))
                             GlossyButtons(rollAngle = rollAngle)
 
 

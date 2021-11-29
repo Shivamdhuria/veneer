@@ -3,6 +3,7 @@ package com.elixer.surface.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val Purple200 = Color(0xFFBB86FC)
+val Purple100 = Color(0xFFE2D1F7)
 val Purple500 = Color(0xFF6200EE)
 val Purple700 = Color(0xFF3700B3)
 val Teal200 = Color(0xFF03DAC5)
@@ -19,3 +20,4 @@ val BLUE = Color(0xFF1C86EB)
 val PINK = Color(0xFFE67FC8)
 val GOLD800= Color(0xFF5E4F1C)
 val BLUE200= Color(0xFFE2F4FC)
+val BLUE100= Color(0xFFDBF2FC)

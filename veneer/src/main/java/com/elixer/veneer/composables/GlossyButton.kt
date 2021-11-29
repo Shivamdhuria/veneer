@@ -12,6 +12,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
@@ -79,8 +80,6 @@ fun GlossyButton(
 //        Text("Modern Button", fontWeight = FontWeight.Bold, color = White)
 ////        Text(angle.toString())
 //    }
-
-
     val contentColor by colors.contentColor(enabled)
     Surface(
         modifier = modifier,
@@ -106,7 +105,6 @@ fun GlossyButton(
                             minHeight = ButtonDefaults.MinHeight
                         )
                         .drawBehind {
-                            val componentSize = size / 1.25f
                             rotate(45f) {
                                 drawGlossyRectangle(colorBegin, colorEnd, angle)
                             }
