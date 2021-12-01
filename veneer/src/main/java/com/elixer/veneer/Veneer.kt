@@ -5,25 +5,18 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.hardware.SensorManager.SENSOR_DELAY_UI
 import kotlinx.coroutines.flow.MutableStateFlow
 
 object Veneer : SensorEventListener {
 
-    val SAMPLING_PERIOD_FASTEST = SensorManager.SENSOR_DELAY_FASTEST
-
-    val SAMPLING_PERIOD_GAME = SensorManager.SENSOR_DELAY_GAME
-
-    val SAMPLING_PERIOD_NORMAL = SensorManager.SENSOR_DELAY_NORMAL
-
-    val SAMPLING_PERIOD_UI = SensorManager.SENSOR_DELAY_UI
+    const val SAMPLING_PERIOD_UI = SENSOR_DELAY_UI
 
     private val accelerometerReading = FloatArray(3)
     private val magnetometerReading = FloatArray(3)
-
     private val rotationMatrix = FloatArray(9)
     private val orientationAngles = FloatArray(3)
 
-    private val samplingPeriod = SAMPLING_PERIOD_UI
     private var sensorManager: SensorManager? = null
 
     val rollAngle = MutableStateFlow(0f)
@@ -46,22 +39,19 @@ object Veneer : SensorEventListener {
                 sensorManager.registerListener(
                     this,
                     accelerometer,
-//                SensorManager.SENSOR_DELAY_NORMAL,
-                    1000000,
-                    SensorManager.SENSOR_DELAY_UI
+
+                    SENSOR_DELAY_UI
                 )
             }
             sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)?.also { magneticField ->
                 sensorManager.registerListener(
                     this,
                     magneticField,
-//                SensorManager.SENSOR_DELAY_NORMAL,
-                    1000000,
-                    SensorManager.SENSOR_DELAY_UI
+                    SAMPLING_PERIOD_UI,
+                    SENSOR_DELAY_UI
                 )
             }
         }
-
     }
 
     private fun unregisterListener() {
@@ -91,7 +81,6 @@ object Veneer : SensorEventListener {
         )
 
         // "rotationMatrix" now has up-to-date information.
-
         SensorManager.getOrientation(rotationMatrix, orientationAngles)
         azimuthAngle.value = (orientationAngles[0] * (180 / Math.PI)).toFloat()
         pitchAngle.value = (orientationAngles[1] * (180 / Math.PI)).toFloat()

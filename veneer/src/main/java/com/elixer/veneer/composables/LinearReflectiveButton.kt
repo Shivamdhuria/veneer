@@ -1,5 +1,6 @@
 package com.elixer.veneer.composables
 
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -12,25 +13,28 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.elixer.veneer.*
-
-import kotlin.math.absoluteValue
+import com.elixer.veneer.GOLD200
+import com.elixer.veneer.GOLD300
+import com.elixer.veneer.GOLD400
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun LinearReflectiveButton(
-    canvasSize: Dp = 300.dp,
     rotationValue: Float,
-    colors: ButtonColors = ButtonDefaults.buttonColors(),
     colorBegin: Color = GOLD400,
-    colorMid: Color = GOLD300,
-    colorEnd: Color = GOLD200,
+    colorMid: Color = GOLD200,
+    colorEnd: Color = GOLD400,
+    animationDurationInMillis: Int = 300,
+    animationEasing: Easing = LinearEasing,
+    sensitivityInverseConstant: Float = 150f,
+    colors: ButtonColors = ButtonDefaults.buttonColors(),
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -41,17 +45,15 @@ fun LinearReflectiveButton(
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     content: @Composable RowScope.() -> Unit
 ) {
-    val lastRotation = remember { mutableStateOf(0f) } // this keeps last rotation
-    val difference = rotationValue - lastRotation.value
-    val time = 1000 / (difference.absoluteValue)
-    lastRotation.value = rotationValue
 
-    //converting angle to a float value and reducing sensitivity
+    // this keeps last rotation, will use it later for something
+    val lastRotation = remember { mutableStateOf(0f) }
+
     val angle: Float by animateFloatAsState(
-        targetValue = rotationValue / 120f,
+        targetValue = rotationValue / sensitivityInverseConstant,
         animationSpec = tween(
-            durationMillis = 200,
-            easing = LinearEasing
+            durationMillis = animationDurationInMillis,
+            easing = animationEasing
         )
     )
     val contentColor by colors.contentColor(enabled)
@@ -101,22 +103,17 @@ fun DrawScope.drawLinearReflective(
 ) {
     drawRoundRect(
         brush = Brush.horizontalGradient(
-//            0.0f to PINK,
             0.0f + angle to colorBegin,
-            0.3f + angle to colorMid,
-            0.5f + angle to colorEnd,
-            0.7f + angle to colorEnd,
-            1.0f + angle to colorBegin,
-
-            ),
-
-        )
+            0.5f + angle to colorMid,
+            1.0f + angle to colorEnd,
+        ),
+    )
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun linearReflectiveButtonPreview() {
-    LinearReflectiveButton(canvasSize = 100.dp, rotationValue = 0f, onClick = {}) {
+    LinearReflectiveButton(rotationValue = 0f, onClick = {}) {
 
     }
 }

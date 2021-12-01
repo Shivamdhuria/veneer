@@ -1,5 +1,6 @@
 package com.elixer.veneer.composables
 
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -29,6 +30,9 @@ fun ReactiveGradientButton(
     rotationValue: Float,
     colorBegin: Color = PINK,
     colorEnd: Color = BLUE,
+    animationDurationInMillis: Int = 300,
+    animationEasing: Easing = LinearEasing,
+    sensitivityInverseConstant: Float = 90f,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
@@ -42,37 +46,16 @@ fun ReactiveGradientButton(
 
 
 ) {
-    val lastRotation = remember { mutableStateOf(0f) } // this keeps last rotation
-    val difference = rotationValue - lastRotation.value
-    val time = 1000 / (difference.absoluteValue)
-    lastRotation.value = rotationValue
+    // this keeps last rotation, will use it later for something
+    val lastRotation = remember { mutableStateOf(0f) }
 
-    //converting angle to a float value and reducing sensitivity
     val angle: Float by animateFloatAsState(
-        targetValue = rotationValue / 120f,
+        targetValue = rotationValue / sensitivityInverseConstant,
         animationSpec = tween(
-            durationMillis = 200,
-            easing = LinearEasing
+            durationMillis = animationDurationInMillis,
+            easing = animationEasing
         )
     )
-//
-//    Column(
-//        verticalArrangement = Arrangement.Center,
-//        horizontalAlignment = Alignment.CenterHorizontally,
-//        modifier = Modifier
-//            .size(height = canvasSize / 3, width = canvasSize)
-//            .drawBehind {
-//                val componentSize = size / 1.25f
-//                drawRoundedRectangle(colorBegin, colorEnd, angle)
-//
-//            },
-//
-//        ) {
-//        Text("Modern Button", fontWeight = FontWeight.Bold, color = White)
-////        Text(angle.toString())
-//    }
-
-
     val contentColor by colors.contentColor(enabled)
     Surface(
         modifier = modifier,
@@ -109,10 +92,7 @@ fun ReactiveGradientButton(
             }
         }
     }
-
-
 }
-
 
 fun DrawScope.drawRoundedRectangle(
     colorBegin: Color,
@@ -120,34 +100,18 @@ fun DrawScope.drawRoundedRectangle(
     angle: Float
 ) {
     drawRoundRect(
-//        brush = Brush.horizontalGradient(
-//            colors
-//        ),
         brush = Brush.horizontalGradient(
-//            0.0f to PINK,
             0.0f + angle to colorBegin,
             1.0f + angle to colorEnd,
 
-            ),
-//        size = Size(
-//            width = 300.dp.toPx(),
-//            height = 150.dp.toPx()
-//        ),
-//        topLeft = Offset(
-//            x = 60.dp.toPx(),
-//            y = 60.dp.toPx()
-//        ),
-//        cornerRadius = CornerRadius(
-//            x = 10.dp.toPx(),
-//            y = 10.dp.toPx()
-//        )
+            )
     )
 }
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun modernButtonPreview() {
-    ReactiveGradientButton( rotationValue = 0f, onClick = {}) {
+    ReactiveGradientButton(rotationValue = 0f, onClick = {}) {
         Text(text = "dsjdjkshd")
 
     }

@@ -32,10 +32,8 @@ import androidx.compose.ui.unit.sp
 import com.elixer.surface.ui.lineTo
 import com.elixer.surface.ui.moveTo
 import com.elixer.surface.ui.theme.*
-import com.elixer.veneer.BLUE_DARK
-import com.elixer.veneer.GOLD100
-import com.elixer.veneer.GOLD400
-import com.elixer.veneer.Veneer
+import com.elixer.surface.ui.theme.GREY800
+import com.elixer.veneer.*
 import com.elixer.veneer.composables.*
 
 class MainActivity : ComponentActivity() {
@@ -46,10 +44,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val scrollState = rememberScrollState()
 
-            val backgroundImage = painterResource(R.drawable.texture)
-            val azimuthAngle by Veneer.rollAngle.collectAsState()
-            val pitchAngle by Veneer.rollAngle.collectAsState()
+            val azimuthAngle by Veneer.azimuthAngle.collectAsState()
+            val pitchAngle by Veneer.pitchAngle.collectAsState()
             val rollAngle by Veneer.rollAngle.collectAsState()
+
             SurfaceTheme() {
                 Surface() {
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -67,18 +65,10 @@ class MainActivity : ComponentActivity() {
                             Spacer(modifier = Modifier.height(20.dp))
                             ReflectiveButtons(rollAngle)
                             Spacer(modifier = Modifier.height(20.dp))
-                            LinearReflectiveButton(rollAngle)
-                            Spacer(modifier = Modifier.height(20.dp))
                             GlossyButtons(rollAngle = rollAngle)
-
-
-//                            modernButton(canvasSize = 200.dp, rotationValue = rollFlo)
-//                            modernButton(canvasSize = 200.dp, rotationValue = rollAngle)
-
+                            Spacer(modifier = Modifier.height(20.dp))
+                            LinearReflectiveButton(rollAngle)
                             angletext(azimuthAngle, pitchAngle, rollAngle)
-                            RadianText()
-
-
                         }
                     }
                 }
@@ -123,209 +113,159 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
     @Composable
-    fun RadianText() {
-//        val azi by azimuthRadian.collectAsState()
-//        val pitch by pitchRadian.collectAsState()
-//        val roll by rollRadian.collectAsState()
-//        Row(
-//            modifier = Modifier.fillMaxWidth(),
-//            horizontalArrangement = Arrangement.SpaceBetween
-//        ) {
-//            Text(azi)
-//            Text(pitch)
-//            Text(roll)
-//        }
-    }
-}
+    fun ReflectiveButtons(rollAngle: Float) {
 
-@Composable
-fun ReflectiveButtons(rollAngle: Float) {
-
-    Text(text = "radial reflective buttons", fontSize = 15.sp, color = Color.Gray)
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        RadialReflectiveButton(
-            rotationValue = rollAngle, onClick = { println("pressed") },
-            shape = RoundedCornerShape(50)
+        Text(text = "radial reflective buttons", fontSize = 15.sp, color = Color.Gray)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
         ) {
-            Icon(
-                Icons.Outlined.Pause, contentDescription = "content description", tint = GREY600,
+            RadialReflectiveButton(
+                rotationValue = rollAngle, onClick = { println("pressed") },
+                shape = RoundedCornerShape(50)
+            ) {
+                Icon(
+                    Icons.Outlined.Pause, contentDescription = "content description", tint = GREY600,
 
+                    )
+            }
+            RadialReflectiveButton(
+                colorList = Utils.RADIAL_GOLD,
+                rotationValue = rollAngle, onClick = { println("pressed") },
+                modifier = Modifier.size(70.dp),  //avoid the oval shape
+                shape = CircleShape,
+            ) {
+                Icon(
+                    Icons.Filled.PlayArrow, contentDescription = "content description", tint = GREY600,
+                    modifier = Modifier.size(100.dp)
                 )
-        }
-        RadialReflectiveButton(
-            rotationValue = rollAngle, onClick = { println("pressed") },
-            modifier = Modifier.size(70.dp),  //avoid the oval shape
-            shape = CircleShape,
-        ) {
-            Icon(
-                Icons.Filled.PlayArrow, contentDescription = "content description", tint = GREY600,
-                modifier = Modifier.size(100.dp)
-            )
-        }
-        RadialReflectiveButton(
-            rotationValue = rollAngle, onClick = { println("pressed") },
-            shape = RoundedCornerShape(50)
-        ) {
-            Icon(
-                Icons.Filled.Stop, contentDescription = "content description", tint = GREY600,
+            }
+            RadialReflectiveButton(
+                rotationValue = rollAngle, onClick = { println("pressed") },
+                shape = RoundedCornerShape(50)
+            ) {
+                Icon(
+                    Icons.Filled.Stop, contentDescription = "content description", tint = GREY600,
 
+                    )
+            }
+        }
+    }
+
+
+    @Composable
+    fun GlossyButtons(rollAngle: Float) {
+        Text(text = "glossy buttons", fontSize = 15.sp, color = Color.Gray)
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            GlossyButton(
+                rotationValue = rollAngle, onClick = { println("pressed") },
+                shape = RoundedCornerShape(50),
+                colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray)
+            ) {
+                Icon(
+                    Icons.Outlined.Person, contentDescription = "content description", tint = BLUE_DARK,
+                    modifier = Modifier.alpha(0.4f),
                 )
-        }
-    }
+            }
 
-}
-
-
-@Composable
-fun GlossyButtons(rollAngle: Float) {
-    Text(text = "glossy buttons", fontSize = 15.sp, color = Color.Gray)
-
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        GlossyButton(
-            rotationValue = rollAngle, onClick = { println("pressed") },
-            shape = RoundedCornerShape(50),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.DarkGray)
-        ) {
-            Icon(
-                Icons.Outlined.Person, contentDescription = "content description", tint = BLUE_DARK,
-                modifier = Modifier.alpha(0.4f),
-            )
-        }
-
-        GlossyButton(
-            onClick = { }, rotationValue = rollAngle, shape = RoundedCornerShape(10)
-        ) {
-            Text(
-                text = "Glossy Button", fontSize = 20.sp,
-                modifier = Modifier
-                    .padding(10.dp)
-                    .alpha(0.4f),
-                color = BLUE_DARK,
-            )
-        }
-    }
-
-
-}
-
-@Composable
-fun ModernGradientButtons(rollAngle: Float) {
-
-    Text(text = "modern gradient buttons", fontSize = 15.sp, color = Color.Gray)
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-
-        ReactiveGradientButton(
-            onClick = { }, rotationValue = rollAngle, shape = RoundedCornerShape(10)
-        ) {
-            Text(
-                text = "Modern Button", fontSize = 20.sp,
-                modifier = Modifier.padding(10.dp),
-            )
-        }
-        Spacer(modifier = Modifier.width(20.dp))
-        ReactiveGradientButton(
-            rotationValue = rollAngle,
-            onClick = { /*TODO*/ },
-            modifier = Modifier.size(50.dp), //avoid the oval shape
-            shape = CircleShape,
-            contentPadding = PaddingValues(0.dp),  //avoid the little icon
-        ) {
-            Icon(Icons.Filled.PlayArrow, contentDescription = "content description", tint = Color.White)
-        }
-    }
-}
-
-
-@Composable
-fun LinearReflectiveButton(rollAngle: Float) {
-
-    Text(text = " linear reflective buttons", fontSize = 15.sp, color = Color.Gray)
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(20.dp),
-    ) {
-        LinearReflectiveButton(
-            rotationValue = rollAngle, onClick = { println("pressed") },
-            shape = RoundedCornerShape(50),
-            modifier = Modifier.width(300.dp)
-        ) {
-            Icon(
-                Icons.Filled.AccountBalance, contentDescription = "content description", tint = GOLD800,
-
+            GlossyButton(
+                onClick = { }, rotationValue = rollAngle, shape = RoundedCornerShape(10)
+            ) {
+                Text(
+                    text = "Glossy Button", fontSize = 20.sp,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .alpha(0.4f),
+                    color = BLUE_DARK,
                 )
+            }
         }
     }
 
-}
+    @Composable
+    fun ModernGradientButtons(rollAngle: Float) {
 
-@Composable
-fun Labels() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text("Azimuth")
-        Text("Pitch")
-        Text("Roll")
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun DefaultPreview() {
-    SurfaceTheme {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+        Text(text = "modern gradient buttons", fontSize = 15.sp, color = Color.Gray)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            ModernGradientButtons(0f)
-            Spacer(modifier = Modifier.height(20.dp))
-            ReflectiveButtons(0f)
-            Spacer(modifier = Modifier.height(20.dp))
-            LinearReflectiveButton(rollAngle = 0f)
-            Spacer(modifier = Modifier.height(20.dp))
+
+            ReactiveGradientButton(
+                onClick = { }, rotationValue = rollAngle, shape = RoundedCornerShape(10)
+            ) {
+                Text(
+                    text = "Modern Button", fontSize = 20.sp,
+                    modifier = Modifier.padding(10.dp),
+                )
+            }
+            Spacer(modifier = Modifier.width(20.dp))
+            ReactiveGradientButton(
+                rotationValue = rollAngle,
+                onClick = { /*TODO*/ },
+                modifier = Modifier.size(50.dp), //avoid the oval shape
+                shape = CircleShape,
+                contentPadding = PaddingValues(0.dp),  //avoid the little icon
+            ) {
+                Icon(Icons.Filled.PlayArrow, contentDescription = "content description", tint = Color.White)
+            }
         }
     }
-}
 
-@Composable
-private fun getTriangle() {
-    Canvas(
-        modifier = Modifier
-            .fillMaxSize()
-            .aspectRatio(1f)
-            .rotate(0f)
-    ) {
-        val canvasWidth = size.width / 1.9f
-        val canvasHeight = size.height / 2f
-        val rect = Rect(center = Offset(canvasWidth, canvasHeight), canvasWidth / 3f)
-        val trianglePath = Path().apply {
-            moveTo(rect.centerRight)
-            lineTo(rect.bottomLeft)
-            lineTo(rect.topLeft)
-            // note that two more point repeats needed to round all corners
-            lineTo(rect.centerRight)
-            lineTo(rect.bottomLeft)
+    @Composable
+    fun LinearReflectiveButton(rollAngle: Float) {
+
+        Text(text = " linear reflective buttons", fontSize = 15.sp, color = Color.Gray)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(20.dp),
+        ) {
+            LinearReflectiveButton(
+                rotationValue = rollAngle, onClick = { println("pressed") },
+                shape = RoundedCornerShape(50),
+                modifier = Modifier.width(300.dp)
+            ) {
+                Icon(
+                    Icons.Filled.AccountBalance, contentDescription = "content description", tint = GOLD800,
+
+                    )
+            }
         }
 
-        drawIntoCanvas { canvas ->
-            canvas.drawOutline(
-                outline = Outline.Generic(trianglePath),
-                paint = Paint().apply {
+    }
 
-                    color = GREY800
-                    pathEffect = PathEffect.cornerPathEffect(rect.maxDimension / 12)
-                }
-            )
+    @Composable
+    fun Labels() {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Azimuth")
+            Text("Pitch")
+            Text("Roll")
+        }
+    }
+
+    @Preview(showBackground = true, showSystemUi = true)
+    @Composable
+    fun DefaultPreview() {
+        SurfaceTheme {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                ModernGradientButtons(0f)
+                Spacer(modifier = Modifier.height(20.dp))
+                ReflectiveButtons(0f)
+                Spacer(modifier = Modifier.height(20.dp))
+                LinearReflectiveButton(rollAngle = 0f)
+                Spacer(modifier = Modifier.height(20.dp))
+            }
         }
     }
 }
