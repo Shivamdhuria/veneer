@@ -1,10 +1,12 @@
 # veneer
 ### reactive buttons for Jetpack Compose
+[![](https://jitpack.io/v/Shivamdhuria/veneer.svg)](https://jitpack.io/#Shivamdhuria/veneer)
+
 
 veneer is a library for reactive buttons. The buttons react depededing upon the roll, pitch and azimuth angle of the phone which is  calculated using accelerometer and magnetic field sensor. 
 
 
-https://user-images.githubusercontent.com/10262897/145681288-e41aa152-c451-4984-b55f-221809614808.MOV
+![veneer](https://github.com/Shivamdhuria/veneer/blob/main/assets/veneer.gif)
 
 
 
