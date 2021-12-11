@@ -46,15 +46,28 @@ To add a reflective button, you need to first instantiate veneer. Make sure you 
 To use any veneer button just add veneer composable, as you'd add a regular button composable. 
 
 ```Kotlin
-    RadialReflectiveButton(
-                rotationValue = rollAngle, onClick = { println("pressed") },
-                shape = RoundedCornerShape(50)
-            ) {
-                Icon(
-                    Icons.Outlined.Pause, contentDescription = "content description", tint = GREY600,
+override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
-                    )
+        setContent {
+            val scrollState = rememberScrollState()
+
+            val azimuthAngle by Veneer.azimuthAngle.collectAsState()
+            val pitchAngle by Veneer.pitchAngle.collectAsState()
+            val rollAngle by Veneer.rollAngle.collectAsState()
+
+            SurfaceTheme() {
+                Surface() {
+                    Box(modifier = Modifier.fillMaxSize()) {
+                      fun RadialReflectiveButton(rotationValue = rollAngle, onClick =  }
+                      ,shape = RoundedCornerShape(50)) {
+                Icon(Icons.Outlined.Pause, contentDescription = "content description", tint = GREY600)
             }
+                    }
+                }
+            }
+        }
+    }
 ```
 
 
