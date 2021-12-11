@@ -4,7 +4,7 @@
 veneer is a library for reactive buttons. The buttons react depededing upon the roll, pitch and azimuth angle of the phone which is  calculated using accelerometer and magnetic field sensor. 
 
 
-![grab-landing-page](https://github.com/winnie1312/grab/blob/master/grab-landingpage-winnie.gif)
+![veneer](https://github.com/Shivamdhuria/veneer/blob/main/assets/veneer.gif)
 
 
 
