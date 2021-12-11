@@ -59,10 +59,12 @@ override fun onCreate(savedInstanceState: Bundle?) {
             SurfaceTheme() {
                 Surface() {
                     Box(modifier = Modifier.fillMaxSize()) {
-                      fun RadialReflectiveButton(rotationValue = rollAngle, onClick =  }
-                      ,shape = RoundedCornerShape(50)) {
-                Icon(Icons.Outlined.Pause, contentDescription = "content description", tint = GREY600)
-            }
+                    
+                         RadialReflectiveButton(rotationValue = rollAngle, onClick = {})
+                        {
+                            Icon(Icons.Outlined.Pause, contentDescription = "content description", tint = GREY600)
+                        }
+            
                     }
                 }
             }
