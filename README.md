@@ -14,8 +14,7 @@ To download it from the jitpack, add these lines in your root build.gradle at th
 ```gradle
 allprojects {
     repositories {
-        ...
-        maven { url 'https://jitpack.io' }
+       maven { url 'https://jitpack.io' }
     }
 }
 ```
@@ -23,7 +22,7 @@ allprojects {
 And then add to the module's build.gradle
 
 ```gradle
-implementation 'com.github.Shivamdhuria:veneer:VERSION'"
+implementation 'com.github.Shivamdhuria:puck:Version'
 ```
 
 # How to use
