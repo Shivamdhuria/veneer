@@ -22,7 +22,7 @@ allprojects {
 And then add to the module's build.gradle
 
 ```gradle
-implementation 'com.github.Shivamdhuria:puck:Version'
+implementation 'com.github.Shivamdhuria:veneer:VERSION'"
 ```
 
 # How to use
